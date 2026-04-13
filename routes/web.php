@@ -17,7 +17,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    Route::resource('parcels', ParcelController::class)->only(['index', 'create', 'store']);
+    Route::resource('parcels', ParcelController::class)->only(['index', 'create', 'store', 'edit', 'update']);
 });
 
 require __DIR__.'/auth.php';

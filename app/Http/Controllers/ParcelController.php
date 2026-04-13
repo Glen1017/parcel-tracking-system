@@ -13,7 +13,7 @@ class ParcelController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->role === 'admin') {
+        if (in_array(auth()->user()->role, ['admin', 'courier'])) {
             $parcels = Parcel::latest()->get();
         } else {
             $parcels = Parcel::where('user_id', auth()->id())->latest()->get();
@@ -69,15 +69,31 @@ class ParcelController extends Controller
      */
     public function edit(Parcel $parcel)
     {
-        //
+        if (auth()->user()->role !== 'courier') {
+            abort(403);
+        }
+        return view('parcels.edit', compact('parcel'));
     }
+    
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Parcel $parcel)
     {
-        //
+        if (auth()->user()->role !== 'courier') {
+            abort(403);
+        }
+
+        $request->validate([
+            'status' => 'required|in:Registered,In Transit,Delivered',
+        ]);
+
+        $parcel->update([
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('parcels.index')->with('success', 'Parcel status updated successfully!');
     }
 
     /**

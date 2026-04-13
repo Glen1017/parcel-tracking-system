@@ -12,6 +12,10 @@
                     <strong>{{ $parcel->tracking_number }}</strong><br>
                     {{ $parcel->sender_name }} → {{ $parcel->recipient_name }}<br>
                     Status: {{ $parcel->status }}
+
+                    @if (auth()->user()->role === 'courier')
+                        <a href="{{ route('parcels.edit', $parcel) }}" class="text-blue-600 ml-4">Update Status</a>
+                    @endif
                 </div>
             @empty
                 <p>No parcels yet.</p>
