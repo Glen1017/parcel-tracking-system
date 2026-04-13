@@ -13,6 +13,19 @@
             <strong>Updated At:</strong> {{ $parcel->updated_at->format('Y-m-d H:i') }}
         </div>
 
+        <div class="mt-6 bg-white shadow rounded p-6">
+            <h2 class="text-xl font-bold mb-4">Tracking History</h2>
+
+            @forelse ($parcel->deliveryEvents as $event)
+            <div class="border-b py-3">
+                <strong>Status:</strong> {{ $event->status }}<br>
+                <strong>Updated By:</strong> {{ $event->user ? $event->user->name : 'System' }}<br>
+                <strong>Time:</strong> {{ $event->created_at->format('Y-m-d H:i') }}
+            </div>
+            @empty
+            <p>No tracking history available.</p>
+            @endforelse
+        </div>
         <div class="mt-4">
             <a href="{{ route('parcels.index') }}" class="text-blue-600 underline">Back to List</a>
         </div>

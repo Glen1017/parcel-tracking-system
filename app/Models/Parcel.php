@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\DeliveryEvent;
 
 class Parcel extends Model
 {
@@ -20,5 +21,10 @@ class Parcel extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function deliveryEvents()
+    {
+        return $this->hasMany(DeliveryEvent::class);
     }
 }

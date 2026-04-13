@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Parcel;
+use App\Models\DeliveryEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -51,12 +52,18 @@ class ParcelController extends Controller
             'return_address' => 'nullable|string',
         ]);
         //Create parcel with unique tracking number
-        Parcel::create([
+        $parcel = Parcel::create([
             'tracking_number' => 'TRK-' . strtoupper(Str::random(10)),
             'sender_name' => $request->sender_name,
             'recipient_name' => $request->recipient_name,
             'address' => $request->address,
             'return_address' => $request->return_address,
+            'status' => 'Registered',
+            'user_id' => auth()->id(),
+        ]);
+        //Log initial delivery event
+        DeliveryEvent::create([
+            'parcel_id' => $parcel->id,
             'status' => 'Registered',
             'user_id' => auth()->id(),
         ]);
@@ -74,6 +81,9 @@ class ParcelController extends Controller
         if ($user->role === 'customer' && $parcel->user_id !== $user->id) {
             abort(403);
     }
+    //Load delivery events with user info
+    $parcel->load('deliveryEvents.user');
+
         return view('parcels.show', compact('parcel'));
     }
 
@@ -107,6 +117,11 @@ class ParcelController extends Controller
             'status' => $request->status,
         ]);
 
+        DeliveryEvent::create([
+            'parcel_id' => $parcel->id,
+            'status' => $request->status,
+            'user_id' => auth()->id(),
+        ]);
         return redirect()->route('parcels.index')->with('success', 'Parcel status updated successfully!');
     }
 
