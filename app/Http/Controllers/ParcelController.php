@@ -13,8 +13,14 @@ class ParcelController extends Controller
      */
     public function index()
     {
-        $parcels = Parcel::where('user_id', auth()->id())->get();
+        if (auth()->user()->role === 'admin') {
+            $parcels = Parcel::latest()->get();
+        } else {
+            $parcels = Parcel::where('user_id', auth()->id())->latest()->get();
+        }
+
         return view('parcels.index', compact('parcels'));
+
     }
 
     /**
