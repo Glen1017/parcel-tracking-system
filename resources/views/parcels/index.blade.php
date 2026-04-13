@@ -24,10 +24,18 @@
                     @if(in_array(auth()->user()->role, ['admin', 'courier']))
                         <a href="{{ route('parcels.edit', $parcel) }}" class="text-blue-600 ml-4 underline">Update Status</a>
                     @endif
-                </div>
-            @empty
-                <p>No parcels yet.</p>
-            @endforelse
+
+                    @if(auth()->user()->role === 'admin') <br>
+                    <form action="{{ route('parcels.destroy', $parcel) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="text-red-600 underline" onclick="return confirm('Are you sure you want to delete this parcel?');">Delete Parcel</button>
+                    </form>
+                @endif
+            </div>      
+@empty  
+    <p>No parcels found.</p>
+@endforelse
         </div>
     </div>
 </x-app-layout>

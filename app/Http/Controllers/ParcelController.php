@@ -130,6 +130,10 @@ class ParcelController extends Controller
      */
     public function destroy(Parcel $parcel)
     {
-        //
+        if (auth()->user()->role !== 'admin') {
+            abort(403);
+    }
+        $parcel->delete();
+        return redirect()->route('parcels.index')->with('success', 'Parcel deleted successfully!');
     }
 }
