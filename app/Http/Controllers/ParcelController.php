@@ -28,6 +28,9 @@ class ParcelController extends Controller
      */
     public function create()
     {
+        if (!in_array(auth()->user()->role, ['admin', 'customer'])) {
+            abort(403);
+        }
         return view('parcels.create');
     }
 
@@ -36,6 +39,9 @@ class ParcelController extends Controller
      */
     public function store(Request $request)
     {
+        if (!in_array(auth()->user()->role, ['admin', 'customer'])) {
+            abort(403);
+        }
         $request->validate([
             'sender_name' => 'required|string|max:255',
             'recipient_name' => 'required|string|max:255',
@@ -69,7 +75,7 @@ class ParcelController extends Controller
      */
     public function edit(Parcel $parcel)
     {
-        if (auth()->user()->role !== 'courier') {
+        if (!in_array(auth()->user()->role, ['admin', 'courier'])) {
             abort(403);
         }
         return view('parcels.edit', compact('parcel'));
@@ -81,12 +87,12 @@ class ParcelController extends Controller
      */
     public function update(Request $request, Parcel $parcel)
     {
-        if (auth()->user()->role !== 'courier') {
+        if (!in_array(auth()->user()->role, ['admin', 'courier'])) {
             abort(403);
         }
 
         $request->validate([
-            'status' => 'required|in:Registered,In Transit,Delivered',
+            'status' => 'required|in:Registered,In Transit,Out for Delivery,Delivered',
         ]);
 
         $parcel->update([

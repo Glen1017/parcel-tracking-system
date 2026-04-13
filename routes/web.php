@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ParcelController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('parcels.index');
 });
 
 Route::get('/dashboard', function () {
