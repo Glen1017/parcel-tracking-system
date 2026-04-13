@@ -39,16 +39,18 @@ class ParcelController extends Controller
      */
     public function store(Request $request)
     {
+        //Only customers and admins can create parcels
         if (!in_array(auth()->user()->role, ['admin', 'customer'])) {
             abort(403);
         }
+        //Validate input
         $request->validate([
             'sender_name' => 'required|string|max:255',
             'recipient_name' => 'required|string|max:255',
             'address' => 'required|string',
             'return_address' => 'nullable|string',
         ]);
-
+        //Create parcel with unique tracking number
         Parcel::create([
             'tracking_number' => 'TRK-' . strtoupper(Str::random(10)),
             'sender_name' => $request->sender_name,
@@ -67,7 +69,12 @@ class ParcelController extends Controller
      */
     public function show(Parcel $parcel)
     {
-        //
+        //Customers can only view their own parcels, while admins and couriers can view all
+        $user = auth()->user();
+        if ($user->role === 'customer' && $parcel->user_id !== $user->id) {
+            abort(403);
+    }
+        return view('parcels.show', compact('parcel'));
     }
 
     /**
@@ -87,6 +94,7 @@ class ParcelController extends Controller
      */
     public function update(Request $request, Parcel $parcel)
     {
+        //Only couriers and admins can update parcel status
         if (!in_array(auth()->user()->role, ['admin', 'courier'])) {
             abort(403);
         }
