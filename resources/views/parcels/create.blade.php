@@ -11,6 +11,7 @@
                 </ul>
             </div>
         @endif
+        {{-- CSRF protection is crucial to prevent cross-site request forgery attacks--}}
         <form method="POST" action="{{ route('parcels.store') }}">
             @csrf
 

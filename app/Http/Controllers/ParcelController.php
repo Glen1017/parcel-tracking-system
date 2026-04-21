@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * ParcelController handles all operations related to parcel management.
+ * Role-based access control is implemented to ensure that only authorised users can perform certain actions:
+ * Input validation to prevent invalid data entry.
+ * Tracking history logged for auditability.
+ */
 namespace App\Http\Controllers;
 
 use App\Models\Parcel;
@@ -44,14 +49,14 @@ class ParcelController extends Controller
         if (!in_array(auth()->user()->role, ['admin', 'customer'])) {
             abort(403);
         }
-        //Validate input
+        //Validate user input to prevent invalid data entry
         $request->validate([
             'sender_name' => 'required|string|max:255',
             'recipient_name' => 'required|string|max:255',
             'address' => 'required|string',
             'return_address' => 'nullable|string',
         ]);
-        //Create parcel with unique tracking number
+        //Create parcel with unique tracking number to prevent duplicates
         $parcel = Parcel::create([
             'tracking_number' => 'TRK-' . strtoupper(Str::random(10)),
             'sender_name' => $request->sender_name,
@@ -61,7 +66,8 @@ class ParcelController extends Controller
             'status' => 'Registered',
             'user_id' => auth()->id(),
         ]);
-        //Log initial delivery event
+        //Log initial delivery event for auditability
+        //This ensures all parcel actions are traceable.
         DeliveryEvent::create([
             'parcel_id' => $parcel->id,
             'status' => 'Registered',
@@ -74,6 +80,8 @@ class ParcelController extends Controller
     /**
      * Display the specified resource.
      */
+    //Customers can only view their own parcels, while admins and couriers can view all
+    //Prevent unauthorized access to parcel details by implementing RBAC checks.
     public function show(Parcel $parcel)
     {
         //Customers can only view their own parcels, while admins and couriers can view all
@@ -105,18 +113,19 @@ class ParcelController extends Controller
     public function update(Request $request, Parcel $parcel)
     {
         //Only couriers and admins can update parcel status
+        //(RBAC) to ensure only authorized users can perform updates
         if (!in_array(auth()->user()->role, ['admin', 'courier'])) {
             abort(403);
         }
-
+        //Validate status to ensure only valid statuses are accepted, preventing invalid data entry
         $request->validate([
             'status' => 'required|in:Registered,In Transit,Out for Delivery,Delivered',
         ]);
-
+        //Update parcel status and log delivery event for auditability
         $parcel->update([
             'status' => $request->status,
         ]);
-
+        //Log delivery event for history and accountability.
         DeliveryEvent::create([
             'parcel_id' => $parcel->id,
             'status' => $request->status,
@@ -128,6 +137,7 @@ class ParcelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    //Only admins can delete parcels to prevent unauthorised data loss
     public function destroy(Parcel $parcel)
     {
         if (auth()->user()->role !== 'admin') {
