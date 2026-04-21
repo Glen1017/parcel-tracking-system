@@ -3,7 +3,7 @@
         <h1 class="text-2xl font-bold mb-4">Parcels</h1>
 
         @if(in_array(auth()->user()->role, ['admin', 'customer']))
-            <a href="{{ route('parcels.create') }}" class="bg-blue-600 text-black px-4 py-2 rounded">
+            <a href="{{ route('parcels.create') }}" class="text-white text-black px-4 py-2 rounded inlline-block mb-4" style="background-color: #374151;">
                 Create Parcel
             </a>
         @endif
@@ -22,14 +22,14 @@
                     Status: {{ $parcel->status }}
 
                     @if(in_array(auth()->user()->role, ['admin', 'courier']))
-                        <a href="{{ route('parcels.edit', $parcel) }}" class="text-blue-600 ml-4 underline">Update Status</a>
+                        <a href="{{ route('parcels.edit', $parcel) }}" class=" text-white px-3 py-1 rounded text-sm ml-2 inline-block" style="background-color: #374151;">Update Status</a>
                     @endif
 
                     @if(auth()->user()->role === 'admin') <br>
                     <form action="{{ route('parcels.destroy', $parcel) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="text-red-600 underline" onclick="return confirm('Are you sure you want to delete this parcel?');">Delete Parcel</button>
+                        <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded text-sm ml-2 inline-block" onclick="return confirm('Are you sure you want to delete this parcel?');">Delete Parcel</button>
                     </form>
                 @endif
             </div>      

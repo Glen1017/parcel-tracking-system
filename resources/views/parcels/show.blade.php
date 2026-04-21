@@ -27,7 +27,7 @@
             @endforelse
         </div>
         <div class="mt-4">
-            <a href="{{ route('parcels.index') }}" class="text-blue-600 underline">Back to List</a>
+            <a href="{{ route('parcels.index') }}" class="inline-block mt-4 px-3 py-1 rounded text-sm" style="background-color: #374151; color: white;">Back to List</a>
         </div>
     </div>
 </x-app-layout>
